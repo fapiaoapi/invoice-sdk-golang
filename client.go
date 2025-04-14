@@ -91,3 +91,16 @@ func parseResponseData(response *Response, target interface{}) error {
 
 	return nil
 }
+
+// ParseResponseData 解析响应数据到指定结构
+func ParseResponseData(response *Response, target interface{}) error {
+	if !response.IsSuccess() {
+		return fmt.Errorf(response.Error())
+	}
+
+	if err := json.Unmarshal(response.Data, target); err != nil {
+		return fmt.Errorf("解析数据失败: %v", err)
+	}
+
+	return nil
+}
