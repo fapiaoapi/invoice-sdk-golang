@@ -1,7 +1,8 @@
-# 发票SDK
+# 发票SDK invoice-sdk-golang
 
-发票SDK golang 数电发票/电子发票/数电票/全电发票/开票 
-支持发票开具、红冲、查询等功能。
+[![Go Reference](https://pkg.go.dev/badge/github.com/fapiaoapi/invoice-sdk-golang.svg)](https://pkg.go.dev/github.com/fapiaoapi/invoice-sdk-golang)
+
+电子发票/数电发票/全电发票 Golang SDK - 支持发票开具、红冲、查询等功能
 基础
 
 [中文文档](https://github.com/fapiaoapi/invoice "文档")
