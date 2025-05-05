@@ -5,7 +5,7 @@
 电子发票/数电发票/全电发票 Golang SDK - 支持发票开具、红冲、查询等功能
 基础
 
-[中文文档](https://github.com/fapiaoapi/invoice "文档")
+[中文文档](https://fa-piao.com/doc.html "文档")
 
 * 获取授权
 * 登录数电发票平台
