@@ -36,7 +36,7 @@ go get github.com/fapiaoapi/invoice-sdk-golang
 ```
 
 
-[📚 查看完整中文文档](https://open.fa-piao.com/doc.html)
+[📚 查看完整中文文档](https://fa-piao.com/doc.html)
 
 ---
 
