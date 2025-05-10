@@ -67,18 +67,45 @@ go get github.com/fapiaoapi/invoice-sdk-golang
 - 商务合作: yuejianghe@qq.com
 ### 开票
  ```bash
-// 配置信息
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/fapiaoapi/invoice-sdk-golang"
+	// "github.com/shopspring/decimal"
+)
+
+func main() {
+	// 配置信息
 	appKey := "your_app_key"
-	appSecret := "you_app_secret"
+	appSecret := "your_app_secret"
 
 	nsrsbh := "91500112MADFAQ9xxx" // 统一社会信用代码
 	// title := "重庆悦江河科技有限公司"         // 名称（营业执照）
-	username := "19122840406" // 手机号码（电子税务局）
+	username := "19122840xxx" // 手机号码（电子税务局）
 	password := ""            // 个人用户密码（电子税务局）
 	// sf := "01"                     // 身份（电子税务局）
 	fphm := "24502000000045823936"
 	kprq := ""
 	token := ""
+
+	// // 税额计算
+	// amount := 200.0
+	// taxRate := 0.01
+	// isIncludeTax := true // 是否含税
+	// se := invoice.CalculateTax(amount, taxRate, isIncludeTax, 2)
+
+	// fmt.Println("价税合计：", amount)
+	// fmt.Println("税率：", taxRate)
+	// fmt.Println("合计金额：", decimal.NewFromFloat(amount).Sub(decimal.NewFromFloat(se)).Round(int32(2)).InexactFloat64())
+	// if isIncludeTax {
+	// 	fmt.Println("含税 合计税额：", se)
+	// } else {
+	// 	fmt.Println("不含税 合计税额：", se)
+	// }
 
 	// 创建客户端
 	client := invoice.NewClient(appKey, appSecret)
@@ -109,22 +136,6 @@ go get github.com/fapiaoapi/invoice-sdk-golang
 	switch loginResult.Code {
 	case 200:
 		fmt.Println("可以开发票了")
-
-		// 税额计算
-		amount := 200.0
-		taxRate := 0.01
-		isIncludeTax := true // 是否含税
-		se := invoice.CalculateTax(amount, taxRate, isIncludeTax)
-
-		fmt.Printf("价税合计：%.2f\n", amount)
-		fmt.Printf("税率：%.2f\n", taxRate)
-		seFloat, _ := strconv.ParseFloat(se, 64)
-		fmt.Printf("合计金额：%.2f\n", amount-seFloat)
-		if isIncludeTax {
-			fmt.Printf("含税 合计税额：%s\n", se)
-		} else {
-			fmt.Printf("不含税 合计税额：%s\n", se)
-		}
 
 		// // 授信额度查询
 		// creditLimitResponse, err := client.QueryCreditLimit(nsrsbh, map[string]string{
@@ -267,18 +278,29 @@ go get github.com/fapiaoapi/invoice-sdk-golang
 	default:
 		fmt.Printf("%d %s\n", loginResult.Code, loginResult.Msg)
 	}
+}
 ```
 
 ### 发票红冲
 
 ```bash
-// 配置信息
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/fapiaoapi/invoice-sdk-golang"
+)
+
+func main() {
+	// 配置信息
 	appKey := "your_app_key"
 	appSecret := "your_app_secret"
 	nsrsbh := "915101820724315989" // 纳税人识别号
 	username := "19122840xxx"      // 手机号码（电子税务局）
 	fphm := "25502000000038381718"
-	kprq := "2025-04-13 13:35:27"
+	// kprq := "2025-04-13 13:35:27"
 	token := ""
 
 	// 创建客户端
@@ -370,4 +392,6 @@ go get github.com/fapiaoapi/invoice-sdk-golang
 		fmt.Printf("%d 查询发票信息失败: %s\n", queryInvoiceResponse.Code, queryInvoiceResponse.Msg)
 		fmt.Printf("错误详情: %s\n", string(queryInvoiceResponse.Data))
 	}
+}
+
 ```

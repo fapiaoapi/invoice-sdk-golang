@@ -1,9 +1,14 @@
 package invoice
 
 // GetAuthorization 获取授权
-func (c *Client) GetAuthorization(nsrsbh string) (*AuthResponse, error) {
+func (c *Client) GetAuthorization(nsrsbh string, accountType ...string) (*AuthResponse, error) {
 	params := map[string]string{
 		"nsrsbh": nsrsbh,
+	}
+
+	// accountType 5 管理
+	if len(accountType) > 0 && accountType[0] != "" {
+		params["type"] = accountType[0]
 	}
 
 	resp, err := c.doRequest("POST", "/v5/enterprise/authorization", params)

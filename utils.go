@@ -10,8 +10,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"strconv"
 	"strings"
+
+	"github.com/shopspring/decimal"
 )
 
 // 生成随机字符串
@@ -70,82 +71,32 @@ func handleResponse(resp *http.Response) (*Response, error) {
 	return &result, nil
 }
 
-// FormatAmount 格式化金额（保留2位小数）
-func FormatAmount(amount interface{}) string {
-	var floatAmount float64
-	
-	switch v := amount.(type) {
-	case float64:
-		floatAmount = v
-	case float32:
-		floatAmount = float64(v)
-	case int:
-		floatAmount = float64(v)
-	case int64:
-		floatAmount = float64(v)
-	case string:
-		floatAmount, _ = strconv.ParseFloat(v, 64)
-	default:
-		return "0.00"
-	}
-	
-	return strconv.FormatFloat(floatAmount, 'f', 2, 64)
-}
-
 // CalculateTax 计算税额
-func CalculateTax(amount, taxRate interface{}, isIncludeTax bool) string {
-	amountFloat := parseFloat(amount)
-	taxRateFloat := parseFloat(taxRate)
-	
-	var tax float64
+func CalculateTax(amount float64, taxRate float64, isIncludeTax bool, newScale int) (se float64) {
+	// 转换为 decimal 类型
+	amountDecimal := decimal.NewFromFloat(amount)
+	taxRateDecimal := decimal.NewFromFloat(taxRate)
+
+	var tax decimal.Decimal
 	if isIncludeTax {
 		// 含税计算：税额 = 金额 / (1 + 税率) * 税率
-		tax = amountFloat / (1 + taxRateFloat) * taxRateFloat
+		one := decimal.NewFromInt(1)
+		denominator := one.Add(taxRateDecimal)
+
+		// 计算税额
+		tax = amountDecimal.Div(denominator).Mul(taxRateDecimal)
 	} else {
 		// 不含税计算：税额 = 金额 * 税率
-		tax = amountFloat * taxRateFloat
+		tax = amountDecimal.Mul(taxRateDecimal)
 	}
-	
-	return FormatAmount(tax)
-}
 
-// CalculateAmountWithoutTax 计算不含税金额
-func CalculateAmountWithoutTax(amount, taxRate interface{}) string {
-	amountFloat := parseFloat(amount)
-	taxRateFloat := parseFloat(taxRate)
-	
-	// 不含税金额 = 含税金额 / (1 + 税率)
-	amountWithoutTax := amountFloat / (1 + taxRateFloat)
-	
-	return FormatAmount(amountWithoutTax)
-}
+	// 设置精度并四舍五入
+	tax = tax.Round(int32(newScale))
+	// // 计算不含税金额
+	// exje = amountDecimal.Sub(tax).Round(int32(newScale)).InexactFloat64()
 
-// CalculateAmountWithTax 计算含税金额
-func CalculateAmountWithTax(amount, taxRate interface{}) string {
-	amountFloat := parseFloat(amount)
-	taxRateFloat := parseFloat(taxRate)
-	
-	// 含税金额 = 不含税金额 * (1 + 税率)
-	amountWithTax := amountFloat * (1 + taxRateFloat)
-	
-	return FormatAmount(amountWithTax)
-}
+	// 转换为 float64 类型
+	se, _ = tax.Float64()
 
-// parseFloat 将各种类型转换为float64
-func parseFloat(value interface{}) float64 {
-	switch v := value.(type) {
-	case float64:
-		return v
-	case float32:
-		return float64(v)
-	case int:
-		return float64(v)
-	case int64:
-		return float64(v)
-	case string:
-		result, _ := strconv.ParseFloat(v, 64)
-		return result
-	default:
-		return 0
-	}
+	return se
 }
