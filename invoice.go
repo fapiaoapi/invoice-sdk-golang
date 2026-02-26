@@ -17,18 +17,18 @@ func (c *Client) BlueTicket(params map[string]string, items []InvoiceItem) (*Inv
 	// 添加发票明细项
 	for i, item := range items {
 		prefix := fmt.Sprintf("fyxm[%d]", i)
-		
+
 		// 使用反射获取结构体字段和值
 		itemData, err := json.Marshal(item)
 		if err != nil {
 			return nil, fmt.Errorf("序列化发票项失败: %v", err)
 		}
-		
+
 		var itemMap map[string]interface{}
 		if err := json.Unmarshal(itemData, &itemMap); err != nil {
 			return nil, fmt.Errorf("解析发票项失败: %v", err)
 		}
-		
+
 		// 添加到请求参数
 		for k, v := range itemMap {
 			if v != nil && v != "" {
@@ -84,7 +84,7 @@ func (c *Client) QueryBlueInvoice(params map[string]string) (*Response, error) {
 
 // ApplyRedInfo 申请红字信息表
 func (c *Client) ApplyRedInfo(params map[string]string) (*Response, error) {
-	return c.doRequest("POST", "/v5/enterprise/applyRedInfo", params)
+	return c.doRequest("POST", "/v5/enterprise/hzxxbsq", params)
 }
 
 // RedTicket 数电票开负数发票
@@ -98,18 +98,18 @@ func (c *Client) RedTicket(params map[string]string, items []InvoiceItem) (*Resp
 	// 添加发票明细项
 	for i, item := range items {
 		prefix := fmt.Sprintf("fyxm[%d]", i)
-		
+
 		// 使用反射获取结构体字段和值
 		itemData, err := json.Marshal(item)
 		if err != nil {
 			return nil, fmt.Errorf("序列化发票项失败: %v", err)
 		}
-		
+
 		var itemMap map[string]interface{}
 		if err := json.Unmarshal(itemData, &itemMap); err != nil {
 			return nil, fmt.Errorf("解析发票项失败: %v", err)
 		}
-		
+
 		// 添加到请求参数
 		for k, v := range itemMap {
 			if v != nil && v != "" {
@@ -127,7 +127,7 @@ func (c *Client) RedTicket(params map[string]string, items []InvoiceItem) (*Resp
 		}
 	}
 
-	return c.doRequest("POST", "/v5/enterprise/redTicket", requestParams)
+	return c.doRequest("POST", "/v5/enterprise/hzfpkj", requestParams)
 }
 
 // SwitchAccount 切换电子税务局账号
@@ -143,7 +143,7 @@ func (c *Client) SwitchAccount(nsrsbh string, options ...map[string]string) (*Re
 		}
 	}
 
-	return c.doRequest("POST", "/v5/enterprise/switchAccount", params)
+	return c.doRequest("POST", "/v5/enterprise/changeUser", params)
 }
 
 // QueryCreditLimit 授信额度查询
@@ -159,5 +159,5 @@ func (c *Client) QueryCreditLimit(nsrsbh string, options ...map[string]string) (
 		}
 	}
 
-	return c.doRequest("POST", "/v5/enterprise/queryCreditLimit", params)
+	return c.doRequest("POST", "/v5/enterprise/creditLine", params)
 }

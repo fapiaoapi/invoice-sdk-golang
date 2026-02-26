@@ -33,13 +33,15 @@ type AuthResponse struct {
 
 // InvoiceResponse 发票开具响应
 type InvoiceResponse struct {
-	Fphm           string `json:"Fphm"`           // 发票号码
-	Kprq           string `json:"Kprq"`           // 开票日期
-	Gmfyx          string `json:"Gmfyx"`          // 购买方邮箱
-	GmfSsjswjgdm   string `json:"GmfSsjswjgdm"`   // 购买方税局机关代码
-	Ewm            string `json:"ewm"`            // 发票打印的二维码
-	Zzfpdm         string `json:"zzfpdm"`         // 纸质发票代码
-	Zzfphm         string `json:"zzfphm"`         // 纸质发票号码
+	Code         int    `json:"code"`
+	Msg          string `json:"msg"`
+	Fphm         string `json:"Fphm"`         // 发票号码
+	Kprq         string `json:"Kprq"`         // 开票日期
+	Gmfyx        string `json:"Gmfyx"`        // 购买方邮箱
+	GmfSsjswjgdm string `json:"GmfSsjswjgdm"` // 购买方税局机关代码
+	Ewm          string `json:"ewm"`          // 发票打印的二维码
+	Zzfpdm       string `json:"zzfpdm"`       // 纸质发票代码
+	Zzfphm       string `json:"zzfphm"`       // 纸质发票号码
 }
 
 // FaceQRCodeResponse 人脸二维码响应
@@ -61,21 +63,21 @@ type FaceStateResponse struct {
 
 // InvoiceItem 发票明细项
 type InvoiceItem struct {
-	Fphxz   string  `json:"fphxz"`   // 发票行性质
-	Spmc    string  `json:"spmc"`    // 商品名称
-	Ggxh    string  `json:"ggxh"`    // 规格型号
-	Dw      string  `json:"dw"`      // 单位
-	Spsl    string  `json:"spsl"`    // 商品数量
-	Dj      string  `json:"dj"`      // 单价
-	Je      string  `json:"je"`      // 金额
-	Sl      string  `json:"sl"`      // 税率
-	Se      string  `json:"se"`      // 税额
-	Hsbz    string  `json:"hsbz"`    // 含税标志
-	Spbm    string  `json:"spbm"`    // 商品编码
-	Yhzcbs  string  `json:"yhzcbs"`  // 优惠赠策标识
-	Lslbs   string  `json:"lslbs"`   // 零税率标识
-	Zzstsgl string  `json:"zzstsgl"` // 增值税特殊管理
-	MtzlDm  string  `json:"mtzlDm"`  // 煤炭种类代码
+	Fphxz   string `json:"fphxz"`   // 发票行性质
+	Spmc    string `json:"spmc"`    // 商品名称
+	Ggxh    string `json:"ggxh"`    // 规格型号
+	Dw      string `json:"dw"`      // 单位
+	Spsl    string `json:"spsl"`    // 商品数量
+	Dj      string `json:"dj"`      // 单价
+	Je      string `json:"je"`      // 金额
+	Sl      string `json:"sl"`      // 税率
+	Se      string `json:"se"`      // 税额
+	Hsbz    string `json:"hsbz"`    // 含税标志
+	Spbm    string `json:"spbm"`    // 商品编码
+	Yhzcbs  string `json:"yhzcbs"`  // 优惠赠策标识
+	Lslbs   string `json:"lslbs"`   // 零税率标识
+	Zzstsgl string `json:"zzstsgl"` // 增值税特殊管理
+	MtzlDm  string `json:"mtzlDm"`  // 煤炭种类代码
 }
 
 // VersionFileResponse 版式文件响应
