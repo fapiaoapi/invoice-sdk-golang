@@ -7,19 +7,20 @@ import (
 	"time"
 
 	"github.com/fapiaoapi/invoice-sdk-golang"
-	// "github.com/shopspring/decimal"
 	"github.com/redis/go-redis/v9"
+	// "github.com/skip2/go-qrcode"
+	// "github.com/shopspring/decimal"
 )
 
 func main() {
 	// 配置信息
-	appKey := "xz35Vxxxx"
-	appSecret := "peWZ4doDQ8xxx"
+	appKey := ""
+	appSecret := ""
 
-	nsrsbh := "91500112MADFAQxxxx" // 统一社会信用代码
-	title := "重庆xxxx有限公司"          // 名称（营业执照）
-	username := "177xxxxx"         // 手机号码（电子税务局）
-	// password := ""                 // 个人用户密码（电子税务局）
+	nsrsbh := "91500112MADFAQXXXX" // 统一社会信用代码
+	title := "XXXX科技有限公司"          // 名称（营业执照）
+	username := "1325580xxxx"      // 手机号码（电子税务局）
+	// password := "1356325"                 // 个人用户密码（电子税务局）
 	// sf := "01"                     // 身份（电子税务局）
 	fphm := "245020000000xxx"
 	kprq := ""
@@ -89,8 +90,8 @@ func main() {
 		"kplx":     "0",
 		"xhdwsbh":  nsrsbh,
 		"xhdwmc":   title,
-		"xhdwdzdh": "重庆市渝北区仙桃街道汇业街1号17-2 19122840xxxx",
-		"xhdwyhzh": "中国工商银行 310008670920023xxxx",
+		"xhdwdzdh": "重庆市两江区xxxx 1912284xxxx",
+		"xhdwyhzh": "中国工商银行 31000867092xxxx",
 		"ghdwmc":   "个人",
 		"zsfs":     "0",
 		"hjje":     "9.99",
@@ -181,14 +182,14 @@ func main() {
 
 	case 430:
 		fmt.Println("人脸认证")
-		// /**
-		//  * 前端模拟人脸认证弹窗
-		//  * @link https://fa-piao.com/fapiao.html?action=face&source=github
-		//  */
-		// // 1. 获取人脸二维码
-		// /**
-		//  * @link https://fa-piao.com/doc.html#api3?source=github
-		//  */
+		/**
+		 * 前端模拟人脸认证弹窗
+		 * @link https://fa-piao.com/fapiao.html?action=face&source=github
+		 */
+		// 1. 获取人脸二维码
+		/**
+		 * @link https://fa-piao.com/doc.html#api3?source=github
+		 */
 		// qrCodeResponse, err5 := client.GetFaceImg(nsrsbh, map[string]string{
 		// 	"username": username,
 		// 	"type":     "1",
@@ -198,16 +199,17 @@ func main() {
 		// 	return
 		// }
 		// //判断 Ewmly 不为空 长度小于500 字符串转二维码图片base64
-		// if qrCodeResponse.Ewmly != "" && len(qrCodeResponse.Ewmly) <= 500 {
+		// if qrCodeResponse.Ewm != "" && len(qrCodeResponse.Ewm) <= 500 {
 		// 	//go get github.com/skip2/go-qrcode
-		// 	qrBase64, err := StringToQRCodeBase64(qrCodeResponse.Ewmly)
-		// 	if err != nil {
-		// 		fmt.Printf("生成二维码base64失败: %v\n", err)
+		// 	qrBase64, err6 := StringToQRCodeBase64(qrCodeResponse.Ewm)
+		// 	if err6 != nil {
+		// 		fmt.Printf("生成二维码base64失败: %v\n", err6)
 		// 		return
 		// 	} else {
-		// 		qrCodeResponse.Ewmly = qrBase64
-		// 		//    // 可选：加上 data URL 前缀，方便在 HTML 中直接使用
-		// 		//     qrCodeResponse.Ewmly = "data:image/png;base64," + qrBase64
+		// 		qrCodeResponse.Ewm = qrBase64
+		// 		// 可选：加上 data URL 前缀，方便在 HTML 中直接使用
+		// 		qrCodeResponse.Ewm = "data:image/png;base64," + qrBase64
+		// 		fmt.Printf("人脸二维码base64: %s\n", qrCodeResponse.Ewm)
 		// 	}
 
 		// }
@@ -259,16 +261,18 @@ func main() {
 }
 
 // func StringToQRCodeBase64(text string) (string, error) {
-// 	var buffer bytes.Buffer
-
-// 	// 生成二维码并写入 buffer
-// 	err := qrcode.WriteColor(&buffer, text, qrcode.Medium, 256, qrcode.Black, qrcode.White)
+// 	// 生成二维码（PNG 格式写入内存 buffer）
+// 	var buf bytes.Buffer
+// 	qr, err := qrcode.New(text, qrcode.Medium)
 // 	if err != nil {
 // 		return "", err
 // 	}
+// 	if err := qr.Write(256, &buf); err != nil {
+// 		return "", err
+// 	}
 
-// 	// 编码为 base64
-// 	encoded := base64.StdEncoding.EncodeToString(buffer.Bytes())
+// 	// 将字节转为 Base64
+// 	encoded := base64.StdEncoding.EncodeToString(buf.Bytes())
 
 // 	return encoded, nil
 // }
