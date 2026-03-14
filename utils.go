@@ -79,12 +79,10 @@ func CalculateTax(amount float64, taxRate float64, isIncludeTax bool, newScale i
 
 	var tax decimal.Decimal
 	if isIncludeTax {
-		// 含税计算：税额 = 金额 / (1 + 税率) * 税率
+		//旧 含税计算：税额 = 金额 / (1 + 税率) * 税率
+		//新 含税计算：税额 = 1 / (1 + 税率) * 税率 * 含税金额
 		one := decimal.NewFromInt(1)
-		denominator := one.Add(taxRateDecimal)
-
-		// 计算税额
-		tax = amountDecimal.Div(denominator).Mul(taxRateDecimal)
+		tax = one.Div(one.Add(taxRateDecimal)).Mul(taxRateDecimal).Mul(amountDecimal)
 	} else {
 		// 不含税计算：税额 = 金额 * 税率
 		tax = amountDecimal.Mul(taxRateDecimal)
@@ -92,8 +90,6 @@ func CalculateTax(amount float64, taxRate float64, isIncludeTax bool, newScale i
 
 	// 设置精度并四舍五入
 	tax = tax.Round(int32(newScale))
-	// // 计算不含税金额
-	// exje = amountDecimal.Sub(tax).Round(int32(newScale)).InexactFloat64()
 
 	// 转换为 float64 类型
 	se, _ = tax.Float64()
