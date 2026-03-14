@@ -82,6 +82,37 @@ func (c *Client) doRequest(method, path string, params map[string]string) (*Resp
 	return handleResponse(resp)
 }
 
+func (c *Client) doRequestWithFields(method, path string, fields []formField) (*Response, error) {
+	randomString := generateRandomString(20)
+	timestamp := fmt.Sprintf("%d", time.Now().Unix())
+
+	signature := calculateSignature(method, path, randomString, timestamp, c.AppKey, c.AppSecret)
+
+	payload, contentType := createMultipartBodyWithFields(fields)
+
+	req, err := http.NewRequest(method, c.BaseURL+path, payload)
+	if err != nil {
+		return nil, fmt.Errorf("创建请求失败: %v", err)
+	}
+
+	req.Header.Set("AppKey", c.AppKey)
+	req.Header.Set("Sign", signature)
+	req.Header.Set("TimeStamp", timestamp)
+	req.Header.Set("RandomString", randomString)
+	req.Header.Set("Content-Type", contentType)
+
+	if c.Token != "" {
+		req.Header.Set("Authorization", c.Token)
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("发送请求失败: %v", err)
+	}
+
+	return handleResponse(resp)
+}
+
 // 解析响应数据到指定结构
 func parseResponseData(response *Response, target interface{}) error {
 	if !response.IsSuccess() {

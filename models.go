@@ -28,6 +28,8 @@ func (r *Response) Error() string {
 
 // AuthResponse 授权响应
 type AuthResponse struct {
+	Code  int    `json:"code"`
+	Msg   string `json:"msg"`
 	Token string `json:"token"`
 }
 
@@ -35,6 +37,7 @@ type AuthResponse struct {
 type InvoiceResponse struct {
 	Code         int    `json:"code"`
 	Msg          string `json:"msg"`
+	Total        int    `json:"total"`
 	Fphm         string `json:"Fphm"`         // 发票号码
 	Kprq         string `json:"Kprq"`         // 开票日期
 	Gmfyx        string `json:"Gmfyx"`        // 购买方邮箱
@@ -46,6 +49,8 @@ type InvoiceResponse struct {
 
 // FaceQRCodeResponse 人脸二维码响应
 type FaceQRCodeResponse struct {
+	Code   int    `json:"code"`
+	Msg    string `json:"msg"`
 	Rzid   string `json:"rzid"`   // 认证id
 	Nsrsbh string `json:"nsrsbh"` // 纳税人识别号
 	Ewm    string `json:"ewm"`    // 二维码
@@ -55,6 +60,8 @@ type FaceQRCodeResponse struct {
 
 // FaceStateResponse 人脸认证状态响应
 type FaceStateResponse struct {
+	Code   int    `json:"code"`
+	Msg    string `json:"msg"`
 	Rzid   string `json:"rzid"`   // 认证id
 	Nsrsbh string `json:"nsrsbh"` // 纳税人识别号
 	Ewm    string `json:"ewm"`    // 二维码

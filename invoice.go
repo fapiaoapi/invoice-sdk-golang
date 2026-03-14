@@ -3,57 +3,29 @@ package invoice
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"reflect"
+	"sort"
 )
 
 // BlueTicket 数电蓝票开具接口
 func (c *Client) BlueTicket(params map[string]string, items []InvoiceItem) (*InvoiceResponse, error) {
 	// 构建请求参数
-	requestParams := make(map[string]string)
-	for k, v := range params {
-		requestParams[k] = v
-	}
+	requestFields := buildMultipartFields(params, items)
 
-	// 添加发票明细项
-	for i, item := range items {
-		prefix := fmt.Sprintf("fyxm[%d]", i)
-
-		// 使用反射获取结构体字段和值
-		itemData, err := json.Marshal(item)
-		if err != nil {
-			return nil, fmt.Errorf("序列化发票项失败: %v", err)
-		}
-
-		var itemMap map[string]interface{}
-		if err := json.Unmarshal(itemData, &itemMap); err != nil {
-			return nil, fmt.Errorf("解析发票项失败: %v", err)
-		}
-
-		// 添加到请求参数
-		for k, v := range itemMap {
-			if v != nil && v != "" {
-				var strValue string
-				switch val := v.(type) {
-				case string:
-					strValue = val
-				case float64:
-					strValue = strconv.FormatFloat(val, 'f', -1, 64)
-				default:
-					strValue = fmt.Sprintf("%v", val)
-				}
-				requestParams[prefix+"["+k+"]"] = strValue
-			}
-		}
-	}
-
-	resp, err := c.doRequest("POST", "/v5/enterprise/blueTicket", requestParams)
+	resp, err := c.doRequestWithFields("POST", "/v5/enterprise/blueTicket", requestFields)
 	if err != nil {
 		return nil, err
 	}
 
 	var invoiceResp InvoiceResponse
-	if err := parseResponseData(resp, &invoiceResp); err != nil {
-		return nil, err
+	invoiceResp.Code = resp.Code
+	invoiceResp.Msg = resp.Msg
+	invoiceResp.Total = resp.Total
+
+	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+		if err := json.Unmarshal(resp.Data, &invoiceResp); err != nil {
+			return nil, fmt.Errorf("解析数据失败: %v", err)
+		}
 	}
 
 	return &invoiceResp, nil
@@ -90,44 +62,54 @@ func (c *Client) ApplyRedInfo(params map[string]string) (*Response, error) {
 // RedTicket 数电票开负数发票
 func (c *Client) RedTicket(params map[string]string, items []InvoiceItem) (*Response, error) {
 	// 构建请求参数
-	requestParams := make(map[string]string)
-	for k, v := range params {
-		requestParams[k] = v
-	}
+	requestFields := buildMultipartFields(params, items)
+	return c.doRequestWithFields("POST", "/v5/enterprise/hzfpkj", requestFields)
+}
 
-	// 添加发票明细项
+func buildMultipartFields(params map[string]string, items []InvoiceItem) []formField {
+	fields := make([]formField, 0, len(params)+len(items)*8)
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		value := params[k]
+		if value != "" {
+			fields = append(fields, formField{Key: k, Value: value})
+		}
+	}
 	for i, item := range items {
 		prefix := fmt.Sprintf("fyxm[%d]", i)
-
-		// 使用反射获取结构体字段和值
-		itemData, err := json.Marshal(item)
-		if err != nil {
-			return nil, fmt.Errorf("序列化发票项失败: %v", err)
-		}
-
-		var itemMap map[string]interface{}
-		if err := json.Unmarshal(itemData, &itemMap); err != nil {
-			return nil, fmt.Errorf("解析发票项失败: %v", err)
-		}
-
-		// 添加到请求参数
-		for k, v := range itemMap {
-			if v != nil && v != "" {
-				var strValue string
-				switch val := v.(type) {
-				case string:
-					strValue = val
-				case float64:
-					strValue = strconv.FormatFloat(val, 'f', -1, 64)
-				default:
-					strValue = fmt.Sprintf("%v", val)
-				}
-				requestParams[prefix+"["+k+"]"] = strValue
-			}
-		}
+		fields = append(fields, buildInvoiceItemFields(prefix, item)...)
 	}
+	return fields
+}
 
-	return c.doRequest("POST", "/v5/enterprise/hzfpkj", requestParams)
+func buildInvoiceItemFields(prefix string, item InvoiceItem) []formField {
+	value := reflect.ValueOf(item)
+	itemType := reflect.TypeOf(item)
+	fields := make([]formField, 0, itemType.NumField())
+	for i := 0; i < itemType.NumField(); i++ {
+		field := itemType.Field(i)
+		tag := field.Tag.Get("json")
+		if tag == "" || tag == "-" {
+			continue
+		}
+		fieldValue := value.Field(i)
+		var strValue string
+		switch fieldValue.Kind() {
+		case reflect.String:
+			strValue = fieldValue.String()
+		default:
+			strValue = fmt.Sprintf("%v", fieldValue.Interface())
+		}
+		if strValue == "" {
+			continue
+		}
+		fields = append(fields, formField{Key: prefix + "[" + tag + "]", Value: strValue})
+	}
+	return fields
 }
 
 // SwitchAccount 切换电子税务局账号

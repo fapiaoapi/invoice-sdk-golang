@@ -1,6 +1,7 @@
 package invoice
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
@@ -40,7 +41,7 @@ func calculateSignature(method, path, randomString, timestamp, appKey, appSecret
 
 // 创建multipart/form-data请求体
 func createRequestBody(params map[string]string) (io.Reader, string) {
-	body := &strings.Builder{}
+	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	for key, value := range params {
@@ -48,7 +49,22 @@ func createRequestBody(params map[string]string) (io.Reader, string) {
 	}
 	writer.Close()
 
-	return strings.NewReader(body.String()), writer.FormDataContentType()
+	return body, writer.FormDataContentType()
+}
+
+type formField struct {
+	Key   string
+	Value string
+}
+
+func createMultipartBodyWithFields(fields []formField) (io.Reader, string) {
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	for _, field := range fields {
+		_ = writer.WriteField(field.Key, field.Value)
+	}
+	writer.Close()
+	return body, writer.FormDataContentType()
 }
 
 // 处理HTTP响应

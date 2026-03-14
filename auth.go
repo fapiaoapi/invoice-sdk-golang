@@ -1,5 +1,10 @@
 package invoice
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // GetAuthorization 获取授权
 func (c *Client) GetAuthorization(nsrsbh string, accountType ...string) (*AuthResponse, error) {
 	params := map[string]string{
@@ -17,12 +22,19 @@ func (c *Client) GetAuthorization(nsrsbh string, accountType ...string) (*AuthRe
 	}
 
 	var authResp AuthResponse
-	if err := parseResponseData(resp, &authResp); err != nil {
-		return nil, err
+	authResp.Code = resp.Code
+	authResp.Msg = resp.Msg
+
+	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+		if err := json.Unmarshal(resp.Data, &authResp); err != nil {
+			return nil, fmt.Errorf("解析数据失败: %v", err)
+		}
 	}
 
 	// 自动设置token
-	c.SetToken(authResp.Token)
+	if authResp.Token != "" {
+		c.SetToken(authResp.Token)
+	}
 	return &authResp, nil
 }
 
@@ -67,8 +79,13 @@ func (c *Client) GetFaceImg(nsrsbh string, options ...map[string]string) (*FaceQ
 	}
 
 	var faceResp FaceQRCodeResponse
-	if err := parseResponseData(resp, &faceResp); err != nil {
-		return nil, err
+	faceResp.Code = resp.Code
+	faceResp.Msg = resp.Msg
+
+	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+		if err := json.Unmarshal(resp.Data, &faceResp); err != nil {
+			return nil, fmt.Errorf("解析数据失败: %v", err)
+		}
 	}
 
 	return &faceResp, nil
@@ -94,8 +111,13 @@ func (c *Client) GetFaceState(nsrsbh, rzid string, options ...map[string]string)
 	}
 
 	var stateResp FaceStateResponse
-	if err := parseResponseData(resp, &stateResp); err != nil {
-		return nil, err
+	stateResp.Code = resp.Code
+	stateResp.Msg = resp.Msg
+
+	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+		if err := json.Unmarshal(resp.Data, &stateResp); err != nil {
+			return nil, fmt.Errorf("解析数据失败: %v", err)
+		}
 	}
 
 	return &stateResp, nil
