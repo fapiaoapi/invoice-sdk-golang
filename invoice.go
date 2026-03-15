@@ -56,7 +56,11 @@ func (c *Client) QueryBlueInvoice(params map[string]string) (*Response, error) {
 
 // ApplyRedInfo 申请红字信息表
 func (c *Client) ApplyRedInfo(params map[string]string) (*Response, error) {
-	return c.doRequest("POST", "/v5/enterprise/hzxxbsq", params)
+	requestFields, err := buildRedInfoFields(params)
+	if err != nil {
+		return nil, err
+	}
+	return c.doRequestWithFields("POST", "/v5/enterprise/hzxxbsq", requestFields)
 }
 
 // RedTicket 数电票开负数发票
@@ -84,6 +88,65 @@ func buildMultipartFields(params map[string]string, items []InvoiceItem) []formF
 		fields = append(fields, buildInvoiceItemFields(prefix, item)...)
 	}
 	return fields
+}
+
+func buildRedInfoFields(params map[string]string) ([]formField, error) {
+	fields := make([]formField, 0, len(params)+8)
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		if k != "fyxm" {
+			value := params[k]
+			if value == "" {
+				continue
+			}
+			fields = append(fields, formField{Key: k, Value: value})
+			continue
+		}
+		raw := params[k]
+		if raw == "" {
+			continue
+		}
+		var items []map[string]string
+		if err := json.Unmarshal([]byte(raw), &items); err != nil {
+			var itemsAny []map[string]interface{}
+			if errAny := json.Unmarshal([]byte(raw), &itemsAny); errAny != nil {
+				if raw != "" {
+					fields = append(fields, formField{Key: k, Value: raw})
+				}
+				continue
+			}
+			items = make([]map[string]string, 0, len(itemsAny))
+			for _, item := range itemsAny {
+				converted := make(map[string]string, len(item))
+				for key, val := range item {
+					converted[key] = fmt.Sprintf("%v", val)
+				}
+				items = append(items, converted)
+			}
+		}
+		for i, item := range items {
+			itemKeys := make([]string, 0, len(item))
+			for itemKey := range item {
+				itemKeys = append(itemKeys, itemKey)
+			}
+			sort.Strings(itemKeys)
+			for _, itemKey := range itemKeys {
+				value := item[itemKey]
+				if value == "" {
+					continue
+				}
+				fields = append(fields, formField{
+					Key:   fmt.Sprintf("fyxm[%d][%s]", i, itemKey),
+					Value: value,
+				})
+			}
+		}
+	}
+	return fields, nil
 }
 
 func buildInvoiceItemFields(prefix string, item InvoiceItem) []formField {
