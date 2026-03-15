@@ -70,6 +70,11 @@ func (c *Client) RedTicket(params map[string]string, items []InvoiceItem) (*Resp
 	return c.doRequestWithFields("POST", "/v5/enterprise/hzfpkj", requestFields)
 }
 
+// SyncRedInfo 同步红字信息表
+func (c *Client) SyncRedInfo(params map[string]string) (*Response, error) {
+	return c.doRequest("POST", "/v5/enterprise/hzxxbtb", params)
+}
+
 func buildMultipartFields(params map[string]string, items []InvoiceItem) []formField {
 	fields := make([]formField, 0, len(params)+len(items)*8)
 	keys := make([]string, 0, len(params))

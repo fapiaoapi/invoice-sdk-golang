@@ -49,6 +49,9 @@ func main() {
 	if err != nil {
 		fmt.Printf("查询发票信息失败: %v\n", err)
 		return
+	} else {
+		// 打印查询结果
+		fmt.Printf("查询发票信息成功: %v\n", queryInvoiceResponse)
 	}
 
 	if queryInvoiceResponse.Code == 200 {
@@ -65,7 +68,14 @@ func main() {
 				"je":   "-70.80",
 				"se":   "-9.20",
 				"spsl": "-1.00",
-				"xh":   "1",
+				"xh":   "3",
+			},
+			{
+				"hsbz": "0",
+				"je":   "-70.80",
+				"se":   "-9.20",
+				"spsl": "-1.00",
+				"xh":   "4",
 			},
 		})
 		if err != nil {
@@ -76,13 +86,13 @@ func main() {
 			"bfch":     "1",
 			"chyydm":   "02",
 			"fyxm":     string(fyxmJSON),
-			"hjje":     "-70.80",
-			"hjse":     "-9.20",
+			"hjje":     "-141.60",
+			"hjse":     "-18.40",
 			"sqyy":     "2",
 			"username": username,
 			"xhdwsbh":  nsrsbh,
 			"yfphm":    fphm,
-			"jyrzzt":   "1",
+			"jyrzzt":   "",
 		}
 		applyRedResponse, err := client.ApplyRedInfo(applyRedParams)
 		if err != nil {
