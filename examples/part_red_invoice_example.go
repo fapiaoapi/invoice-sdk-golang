@@ -8,7 +8,7 @@ import (
 	"github.com/fapiaoapi/invoice-sdk-golang"
 )
 
-func main() {
+func main33() {
 	// 配置信息
 	appKey := ""
 	appSecret := ""

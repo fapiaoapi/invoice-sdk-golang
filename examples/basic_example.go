@@ -20,11 +20,12 @@ func main() {
 	nsrsbh := "91500112MADFAQXXXX" // 统一社会信用代码
 	title := "XXXX科技有限公司"          // 名称（营业执照）
 	username := "1325580xxxx"      // 手机号码（电子税务局）
-	// password := "1356325"                 // 个人用户密码（电子税务局）
+	// password := "1356325"          // 个人用户密码（电子税务局）
 	// sf := "01"                     // 身份（电子税务局）
 	fphm := "245020000000xxx"
 	kprq := ""
 	token := ""
+	accountType := "6" //默认6 6基础 7标准
 
 	// 创建客户端
 	client := invoice.NewClient(appKey, appSecret)
@@ -37,7 +38,7 @@ func main() {
 		Password: "test123456",     // Redis密码（无密码则留空）
 		DB:       0,                // 使用默认数据库
 	})
-	key := nsrsbh + "@TOKEN"
+	key := nsrsbh + "@" + username + "@TOKEN"
 	result, err := rdb.Get(context.Background(), key).Result()
 	if err == nil && result != "" {
 		token = result
@@ -52,7 +53,8 @@ func main() {
 		 * 获取授权Token文档
 		 * @link https://fa-piao.com/doc.html#api1?source=github
 		 */
-		authResult, authErr := client.GetAuthorization(nsrsbh, "6")
+		authResult, authErr := client.GetAuthorization(nsrsbh, accountType, "", "")
+		// authResult, authErr := client.GetAuthorization(nsrsbh, accountType, username, password)
 		if authErr != nil {
 			fmt.Printf("授权失败: %v\n", authErr)
 			return
