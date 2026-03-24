@@ -211,3 +211,11 @@ func (c *Client) QueryCreditLimit(nsrsbh string, options ...map[string]string) (
 
 	return c.doRequest("POST", "/v5/enterprise/creditLine", params)
 }
+
+func (c *Client) httpPost(url string, params map[string]string) (*Response, error) {
+	return c.doRequest("POST", url, params)
+}
+
+func (c *Client) httpGet(url string, params map[string]string) (*Response, error) {
+	return c.doRequest("GET", url, params)
+}

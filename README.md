@@ -321,9 +321,6 @@ func main() {
 	case 401:
 		fmt.Printf("%d 授权失败: %s\n", invoiceResponse.Code, invoiceResponse.Msg)
 		// 重新授权获取token
-	case 503:
-		fmt.Printf("%d 服务器繁忙: %s\n", invoiceResponse.Code, invoiceResponse.Msg)
-		//服务器繁忙 重新发起请求即可
 	default:
 		fmt.Printf("%d %s\n", invoiceResponse.Code, invoiceResponse.Msg)
 		fmt.Printf("失败错误: %v\n", err)
