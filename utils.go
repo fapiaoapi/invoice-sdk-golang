@@ -68,23 +68,23 @@ func createMultipartBodyWithFields(fields []formField) (io.Reader, string) {
 }
 
 // 处理HTTP响应
-func handleResponse(resp *http.Response) (*Response, error) {
+func handleResponse(resp *http.Response) (*Response, []byte, error) {
 	if resp == nil {
-		return nil, fmt.Errorf("空响应")
+		return nil, nil, fmt.Errorf("空响应")
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %v", err)
+		return nil, nil, fmt.Errorf("读取响应失败: %v", err)
 	}
 
 	var result Response
 	if err := json.Unmarshal(body, &result); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %v", err)
+		return nil, nil, fmt.Errorf("解析响应失败: %v", err)
 	}
 
-	return &result, nil
+	return &result, body, nil
 }
 
 // CalculateTax 计算税额

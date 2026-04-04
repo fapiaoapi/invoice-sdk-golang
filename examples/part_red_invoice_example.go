@@ -19,7 +19,7 @@ func main33() {
 	token := ""
 
 	// 创建客户端
-	client := invoice.NewClient(appKey, appSecret)
+	client := invoice.NewClient(appKey, appSecret, false)
 
 	if token != "" {
 		client.SetToken(token)

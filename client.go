@@ -4,9 +4,11 @@
 package invoice
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -20,15 +22,17 @@ type Client struct {
 	AppKey     string
 	AppSecret  string
 	Token      string
+	Debug      bool
 	HTTPClient *http.Client
 }
 
 // NewClient 创建新的客户端实例
-func NewClient(appKey, appSecret string) *Client {
+func NewClient(appKey, appSecret string, debug bool) *Client {
 	return &Client{
 		BaseURL:    DefaultBaseURL,
 		AppKey:     appKey,
 		AppSecret:  appSecret,
+		Debug:      debug,
 		HTTPClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
@@ -73,13 +77,26 @@ func (c *Client) doRequest(method, path string, params map[string]string) (*Resp
 		req.Header.Set("Authorization", c.Token)
 	}
 
+	if c.Debug {
+		c.printDebugRequest(method, c.BaseURL+path, req.Header, params)
+	}
+
 	// 发送请求
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("发送请求失败: %v", err)
 	}
 
-	return handleResponse(resp)
+	response, responseBody, err := handleResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.Debug {
+		c.printDebugResponse(resp.StatusCode, responseBody)
+	}
+
+	return response, nil
 }
 
 func (c *Client) doRequestWithFields(method, path string, fields []formField) (*Response, error) {
@@ -105,12 +122,56 @@ func (c *Client) doRequestWithFields(method, path string, fields []formField) (*
 		req.Header.Set("Authorization", c.Token)
 	}
 
+	if c.Debug {
+		c.printDebugRequest(method, c.BaseURL+path, req.Header, fields)
+	}
+
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("发送请求失败: %v", err)
 	}
 
-	return handleResponse(resp)
+	response, responseBody, err := handleResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.Debug {
+		c.printDebugResponse(resp.StatusCode, responseBody)
+	}
+
+	return response, nil
+}
+
+func (c *Client) printDebugRequest(method, url string, header http.Header, params interface{}) {
+	fmt.Printf("[invoice-sdk debug] request method=%s url=%s\n", method, url)
+	fmt.Printf("[invoice-sdk debug] request header=%s\n", formatHeader(header))
+	fmt.Printf("[invoice-sdk debug] request params=%v\n", params)
+}
+
+func (c *Client) printDebugResponse(statusCode int, body []byte) {
+	fmt.Printf("[invoice-sdk debug] response status=%d\n", statusCode)
+	fmt.Printf("[invoice-sdk debug] response body=%s\n", bytes.TrimSpace(body))
+}
+
+func formatHeader(header http.Header) string {
+	keys := make([]string, 0, len(header))
+	for key := range header {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	result := make(map[string][]string, len(header))
+	for _, key := range keys {
+		result[key] = header[key]
+	}
+
+	headerJSON, err := json.Marshal(result)
+	if err != nil {
+		return fmt.Sprintf("%v", header)
+	}
+
+	return string(headerJSON)
 }
 
 // 解析响应数据到指定结构

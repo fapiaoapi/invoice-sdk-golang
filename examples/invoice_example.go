@@ -39,7 +39,7 @@ func main22() {
 	// }
 
 	// 创建客户端
-	client := invoice.NewClient(appKey, appSecret)
+	client := invoice.NewClient(appKey, appSecret, false)
 
 	// 获取授权
 	if token != "" {
