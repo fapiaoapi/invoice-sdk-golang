@@ -34,7 +34,9 @@
 ```bash
 go get github.com/fapiaoapi/invoice-sdk-golang
 ```
+[📦 查看pkg.go.dev最新版本](https://pkg.go.dev/github.com/fapiaoapi/invoice-sdk-golang)
 
+---
 
 [📚 查看完整中文文档](https://fa-piao.com/doc.html?source=github)
 
