@@ -435,5 +435,6 @@ func StringToQrcode(text string) {
 
 ```
 [发票税额计算demo](examples/tax_example.go "发票税额计算") |
-[发票红冲demo](examples/red_invoice_example.go "发票红冲")
-[部分发票红冲demo](examples/part_red_invoice_example.go "部分发票红冲")
+[扫码登录demo](examples/face_login_example.go "发票税额计算") |
+[发票红冲demo](examples/red_invoice_example.go "发票红冲") |
+[部分发票红冲demo](examples/part_red_invoice_example.go "部分发票红冲")|
