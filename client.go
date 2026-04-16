@@ -33,7 +33,7 @@ func NewClient(appKey, appSecret string, debug bool) *Client {
 		AppKey:     appKey,
 		AppSecret:  appSecret,
 		Debug:      debug,
-		HTTPClient: &http.Client{Timeout: 30 * time.Second},
+		HTTPClient: &http.Client{Timeout: 150 * time.Second},
 	}
 }
 

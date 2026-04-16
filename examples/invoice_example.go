@@ -45,7 +45,7 @@ func main22() {
 	if token != "" {
 		client.SetToken(token)
 	} else {
-		authResult, err := client.GetAuthorization(nsrsbh)
+		authResult, err := client.GetAuthorization(nsrsbh, "6", username, "")
 		if err != nil {
 			fmt.Printf("授权失败: %v\n", err)
 			return

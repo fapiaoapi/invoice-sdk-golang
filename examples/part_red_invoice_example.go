@@ -25,7 +25,7 @@ func main33() {
 		client.SetToken(token)
 	} else {
 		// 获取授权
-		authResponse, err := client.GetAuthorization(nsrsbh)
+		authResponse, err := client.GetAuthorization(nsrsbh, "6", username, "")
 		if err != nil {
 			fmt.Printf("授权失败: %v\n", err)
 			return
