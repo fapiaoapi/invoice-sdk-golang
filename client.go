@@ -71,6 +71,7 @@ func (c *Client) doRequest(method, path string, params map[string]string) (*Resp
 	req.Header.Set("TimeStamp", timestamp)
 	req.Header.Set("RandomString", randomString)
 	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Sdk", "Go1016")
 
 	// 如果有授权令牌，添加到请求头
 	if c.Token != "" {
@@ -117,6 +118,7 @@ func (c *Client) doRequestWithFields(method, path string, fields []formField) (*
 	req.Header.Set("TimeStamp", timestamp)
 	req.Header.Set("RandomString", randomString)
 	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Sdk", "Go1016")
 
 	if c.Token != "" {
 		req.Header.Set("Authorization", c.Token)
