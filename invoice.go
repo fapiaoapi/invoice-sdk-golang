@@ -22,11 +22,11 @@ func (c *Client) BlueTicket(params map[string]string, items []InvoiceItem) (*Inv
 	invoiceResp.Msg = resp.Msg
 	invoiceResp.Total = resp.Total
 
-	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
-		if err := json.Unmarshal(resp.Data, &invoiceResp); err != nil {
-			return nil, fmt.Errorf("解析数据失败: %v", err)
-		}
-	}
+    if resp.Code == 200 && resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+        if err := json.Unmarshal(resp.Data, &invoiceResp); err != nil {
+              return nil, fmt.Errorf("解析数据失败: %v", err)
+        }
+    }
 
 	return &invoiceResp, nil
 }

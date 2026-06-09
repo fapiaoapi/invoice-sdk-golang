@@ -23,7 +23,7 @@ func (c *Client) GetAuthorization(nsrsbh string, accountType string, username st
 	authResp.Code = resp.Code
 	authResp.Msg = resp.Msg
 
-	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+	if resp.Code == 200 && resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
 		if err := json.Unmarshal(resp.Data, &authResp); err != nil {
 			return nil, fmt.Errorf("解析数据失败: %v", err)
 		}
@@ -80,7 +80,7 @@ func (c *Client) GetFaceImg(nsrsbh string, options ...map[string]string) (*FaceQ
 	faceResp.Code = resp.Code
 	faceResp.Msg = resp.Msg
 
-	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+	if resp.Code == 200 && resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
 		if err := json.Unmarshal(resp.Data, &faceResp); err != nil {
 			return nil, fmt.Errorf("解析数据失败: %v", err)
 		}
@@ -112,7 +112,7 @@ func (c *Client) GetFaceState(nsrsbh, rzid string, options ...map[string]string)
 	stateResp.Code = resp.Code
 	stateResp.Msg = resp.Msg
 
-	if resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
+	if resp.Code == 200 && resp.Data != nil && len(resp.Data) > 0 && string(resp.Data) != "null" {
 		if err := json.Unmarshal(resp.Data, &stateResp); err != nil {
 			return nil, fmt.Errorf("解析数据失败: %v", err)
 		}
